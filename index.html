@@ -17,8 +17,16 @@
             transform: rotate(180deg);
         }
         button {
-            margin-left: 50%;
-            margin-top: 5px;
+            margin-left: 50;
+            margin-top: 50;
+            padding: 25px 50px;
+            border-radius: 20%;
+            background-color: #4005F5;
+        }
+        .pts {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 40px;
         }
     </style>
 </head>
@@ -28,13 +36,57 @@
         <img src="Illustration_sans_titre (2).jpg" alt="logo" width="50">
     </header>
     <div>
-        <button onclick="plus()">S'inscrire</button>
+        <p class="pts">pts : <span id="points">0</span></p>
+        <button id="btn">CLICK ME</button>
+        <div id="extraButtons"></div><br>
+        <button id="buyBtn">Acheter un nouveau bouton (10 points)</button>
     </div>
     
-    <script>
-        function plus() {
-            alert("Prank")
-        }
-    </script>
+<script>
+let score = 0;
+
+// bouton principal
+const button = document.getElementById("btn");
+
+// bouton d'achat
+const buyBtn = document.getElementById("buyBtn");
+
+// div pour les boutons supplémentaires
+const extraDiv = document.getElementById("extraButtons");
+
+// fonction pour mettre à jour le score à l'écran
+function updateScore() {
+    document.getElementById("points").innerText = score;
+    // afficher bouton d'achat si on a 10 points ou plus
+    if(score >= 10) {
+        buyBtn.style.display = "inline-block";
+    } else {
+        buyBtn.style.display = "none";
+    }
+}
+
+// action du bouton principal
+button.addEventListener("click", function() {
+    score += 1;
+    updateScore();
+});
+
+// action du bouton d'achat
+buyBtn.addEventListener("click", function() {
+    if(score >= 10) {
+        score -= 10; // on paie 10 points
+        updateScore();
+        
+        // création d'un nouveau bouton qui ajoute 1 point
+        const newBtn = document.createElement("button");
+        newBtn.innerText = "Bonus +1 point";
+        newBtn.addEventListener("click", function() {
+            score += 1;
+            updateScore();
+        });
+        extraDiv.appendChild(newBtn);
+    }
+});
+</script>
 </body>
 </html>
