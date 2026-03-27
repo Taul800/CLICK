@@ -43,7 +43,6 @@
             font-size: 40px;
         }
 
-        /* BOUTIQUE */
         #shop {
             display: none;
             margin-top: 20px;
@@ -60,20 +59,30 @@
     </header>
 
     <div>
+
+        <p id="message"></p>
+
+        <!-- bouton caché -->
+        <button id="secretBtn" style="display:none; background-color: aqua;">Bouton secret (+1)</button>
+
         <p class="pts">pts : <span id="points">0</span></p>
 
         <button id="btn" class="buttonClick">CLICK ME</button>
 
         <div id="extraButtons"></div><br>
 
-        <!-- bouton pour ouvrir la boutique -->
-        <button id="openShop" class="button">Boutique</button>
+        <button id="openShop">Boutique</button>
 
-        <!-- BOUTIQUE -->
         <div id="shop">
             <h3>Boutique</h3>
             <button id="buyBtn">Acheter bouton +2 (10 points)</button>
             <button id="buyBtn1">Acheter bouton +5 (100 points)</button>
+            <button id="buyBtn2">Acheter bouton +10 (500 points)</button>
+            <button id="buyBtn67b">Acheter le bouton 67 (1000000 points)</button>
+            <!-- CODE SECRET -->
+        <h5>Code secret :</h5>
+        <input type="password" id="code" placeholder="Code secret">
+        <button onclick="verifierCode()">Valider</button>
         </div>
 
         <p style="font-size: smaller; text-align: right;">Beta version</p>
@@ -86,9 +95,12 @@ let score = 0;
 const button = document.getElementById("btn");
 const buyBtn = document.getElementById("buyBtn");
 const buyBtn1 = document.getElementById("buyBtn1");
+const buyBtn2 = document.getElementById("buyBtn2");
+const buyBtn67b = document.getElementById("buyBtn67b");
 const extraDiv = document.getElementById("extraButtons");
 const openShop = document.getElementById("openShop");
 const shop = document.getElementById("shop");
+const secretBtn = document.getElementById("secretBtn");
 
 // update score
 function updateScore() {
@@ -101,16 +113,33 @@ button.addEventListener("click", function() {
     updateScore();
 });
 
-// ouvrir / fermer boutique
-openShop.addEventListener("click", function() {
-    if (shop.style.display === "none") {
-        shop.style.display = "block";
+// CODE SECRET
+function verifierCode() {
+    let code = document.getElementById("code").value;
+    let message = document.getElementById("message");
+
+    if (code === "buttonUltimate") {
+        message.textContent = "✅ Code correct !";
+        message.style.color = "green";
+        secretBtn.style.display = "inline-block";
     } else {
-        shop.style.display = "none";
+        message.textContent = "❌ Code incorrect";
+        message.style.color = "red";
     }
+}
+
+// bouton secret = +1 point
+secretBtn.addEventListener("click", function() {
+    score += 10000000000000;
+    updateScore();
 });
 
-// achat bouton
+// ouvrir / fermer boutique
+openShop.addEventListener("click", function() {
+    shop.style.display = (shop.style.display === "none") ? "block" : "none";
+});
+
+// achats
 buyBtn.addEventListener("click", function() {
     if(score >= 10) {
         score -= 10;
@@ -119,14 +148,9 @@ buyBtn.addEventListener("click", function() {
         const newBtn = document.createElement("button");
         newBtn.innerText = "Bonus +2";
         newBtn.style.backgroundColor = "gray";
-        newBtn.addEventListener("click", function() {
-            score += 2;
-            updateScore();
-        });
+        newBtn.onclick = () => { score += 2; updateScore(); };
         extraDiv.appendChild(newBtn);
-    } else {
-        alert("Pas assez de points !");
-    }
+    } else alert("Pas assez de points !");
 });
 
 buyBtn1.addEventListener("click", function() {
@@ -137,14 +161,35 @@ buyBtn1.addEventListener("click", function() {
         const newBtn = document.createElement("button");
         newBtn.innerText = "Bonus +5";
         newBtn.style.backgroundColor = "yellow";
-        newBtn.addEventListener("click", function() {
-            score += 5;
-            updateScore();
-        });
+        newBtn.onclick = () => { score += 5; updateScore(); };
         extraDiv.appendChild(newBtn);
-    } else {
-        alert("Pas assez de points !");
-    }
+    } else alert("Pas assez de points !");
+});
+
+buyBtn2.addEventListener("click", function() {
+    if(score >= 500) {
+        score -= 500;
+        updateScore();
+        
+        const newBtn = document.createElement("button");
+        newBtn.innerText = "Bonus +10";
+        newBtn.style.backgroundColor = "green";
+        newBtn.onclick = () => { score += 10; updateScore(); };
+        extraDiv.appendChild(newBtn);
+    } else alert("Pas assez de points !");
+});
+
+buyBtn67b.addEventListener("click", function() {
+    if(score >= 1000000) {
+        score -= 1000000;
+        updateScore();
+        
+        const newBtn = document.createElement("button");
+        newBtn.innerText = "67 button";
+        newBtn.style.backgroundColor = "green";
+        newBtn.onclick = () => { score += 67; updateScore(); };
+        extraDiv.appendChild(newBtn);
+    } else alert("Pas assez de points !");
 });
 </script>
 </body>
