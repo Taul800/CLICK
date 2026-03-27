@@ -17,16 +17,39 @@
             transform: rotate(180deg);
         }
         button {
-            margin-left: 50;
-            margin-top: 50;
-            padding: 25px 50px;
+            margin-left: 10px;
+            margin-top: 20px;
+            padding: 15px 30px;
             border-radius: 20%;
             background-color: #4005F5;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button {
+            margin-left: 10px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #4005F5;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
         .pts {
             text-align: center;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 40px;
+        }
+
+        /* BOUTIQUE */
+        #shop {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #4005F5;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -35,58 +58,92 @@
         <h1>CLICK</h1>
         <img src="Illustration_sans_titre (2).jpg" alt="logo" width="50">
     </header>
+
     <div>
         <p class="pts">pts : <span id="points">0</span></p>
-        <button id="btn">CLICK ME</button>
+
+        <button id="btn" class="buttonClick">CLICK ME</button>
+
         <div id="extraButtons"></div><br>
-        <button id="buyBtn">Acheter un nouveau bouton (10 points)</button>
+
+        <!-- bouton pour ouvrir la boutique -->
+        <button id="openShop" class="button">Boutique</button>
+
+        <!-- BOUTIQUE -->
+        <div id="shop">
+            <h3>Boutique</h3>
+            <button id="buyBtn">Acheter bouton +2 (10 points)</button>
+            <button id="buyBtn1">Acheter bouton +5 (100 points)</button>
+        </div>
+
         <p style="font-size: smaller; text-align: right;">Beta version</p>
     </div>
-    <div></div>
-    
+
 <script>
 let score = 0;
 
-// bouton principal
+// éléments
 const button = document.getElementById("btn");
-
-// bouton d'achat
 const buyBtn = document.getElementById("buyBtn");
-
-// div pour les boutons supplémentaires
+const buyBtn1 = document.getElementById("buyBtn1");
 const extraDiv = document.getElementById("extraButtons");
+const openShop = document.getElementById("openShop");
+const shop = document.getElementById("shop");
 
-// fonction pour mettre à jour le score à l'écran
+// update score
 function updateScore() {
     document.getElementById("points").innerText = score;
-    // afficher bouton d'achat si on a 10 points ou plus
-    if(score >= 10) {
-        buyBtn.style.display = "inline-block";
-    } else {
-        buyBtn.style.display = "none";
-    }
 }
 
-// action du bouton principal
+// CLICK principal
 button.addEventListener("click", function() {
-    score += 1;
+    score += 100;
     updateScore();
 });
 
-// action du bouton d'achat
+// ouvrir / fermer boutique
+openShop.addEventListener("click", function() {
+    if (shop.style.display === "none") {
+        shop.style.display = "block";
+    } else {
+        shop.style.display = "none";
+    }
+});
+
+// achat bouton
 buyBtn.addEventListener("click", function() {
     if(score >= 10) {
-        score -= 10; // on paie 10 points
+        score -= 10;
         updateScore();
         
-        // création d'un nouveau bouton qui ajoute 1 point
         const newBtn = document.createElement("button");
-        newBtn.innerText = "Bonus +1 point";
+        newBtn.innerText = "Bonus +2";
+        newBtn.style.backgroundColor = "gray";
         newBtn.addEventListener("click", function() {
-            score += 1;
+            score += 2;
             updateScore();
         });
         extraDiv.appendChild(newBtn);
+    } else {
+        alert("Pas assez de points !");
+    }
+});
+
+buyBtn1.addEventListener("click", function() {
+    if(score >= 100) {
+        score -= 100;
+        updateScore();
+        
+        const newBtn = document.createElement("button");
+        newBtn.innerText = "Bonus +5";
+        newBtn.style.backgroundColor = "yellow";
+        newBtn.addEventListener("click", function() {
+            score += 5;
+            updateScore();
+        });
+        extraDiv.appendChild(newBtn);
+    } else {
+        alert("Pas assez de points !");
     }
 });
 </script>
