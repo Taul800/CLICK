@@ -78,6 +78,7 @@
             <button id="buyBtn">Acheter bouton +2 (10 points)</button>
             <button id="buyBtn1">Acheter bouton +5 (100 points)</button>
             <button id="buyBtn2">Acheter bouton +10 (500 points)</button>
+            <button id="BuyBtn3">Acheter bouton +50 (1000 points)</button>
             <button id="buyBtn67b">Acheter le bouton 67 (1000000 points)</button>
             <!-- CODE SECRET -->
         <h5>Code secret :</h5>
@@ -96,6 +97,7 @@ const button = document.getElementById("btn");
 const buyBtn = document.getElementById("buyBtn");
 const buyBtn1 = document.getElementById("buyBtn1");
 const buyBtn2 = document.getElementById("buyBtn2");
+const buyBtn3 = document.getElementById("buyBtn50");
 const buyBtn67b = document.getElementById("buyBtn67b");
 const extraDiv = document.getElementById("extraButtons");
 const openShop = document.getElementById("openShop");
@@ -175,6 +177,19 @@ buyBtn2.addEventListener("click", function() {
         newBtn.innerText = "Bonus +10";
         newBtn.style.backgroundColor = "green";
         newBtn.onclick = () => { score += 10; updateScore(); };
+        extraDiv.appendChild(newBtn);
+    } else alert("Pas assez de points !");
+});
+
+buyBtn3.addEventListener("click", function() {
+    if(score >= 1000) {
+        score -= 1000;
+        updateScore();
+        
+        const newBtn = document.createElement("button");
+        newBtn.innerText = "Bonus +50";
+        newBtn.style.backgroundColor = "green";
+        newBtn.onclick = () => { score += 50; updateScore(); };
         extraDiv.appendChild(newBtn);
     } else alert("Pas assez de points !");
 });
