@@ -60,6 +60,22 @@
 
     <div>
 
+        <div id="accountSection" style="margin: 20px 0; padding: 15px; border: 2px solid #4005F5; border-radius: 10px;">
+            <div id="authForm" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;">
+                <input type="text" id="username" placeholder="Nom d'utilisateur" style="padding:10px; border-radius:5px; border:1px solid #ccc;">
+                <input type="password" id="password" placeholder="Mot de passe" style="padding:10px; border-radius:5px; border:1px solid #ccc;">
+                <button id="registerBtn" class="button">Créer compte</button>
+                <button id="loginBtn" class="button">Se connecter</button>
+            </div>
+            <div id="userInfo" style="display:none; align-items:center; gap:10px; justify-content:center; margin-top:10px;">
+                <span id="welcome" style="font-weight:bold; color:#4005F5;"></span>
+                <button id="logoutBtn" class="button">Se déconnecter</button>
+            </div>
+            <div style="display:flex; justify-content:center; margin-top:10px;">
+                <button id="deleteAllBtn" class="button" style="background-color:#d93025;">Supprimer tous les comptes</button>
+            </div>
+        </div>
+
         <p id="message"></p>
 
         <!-- bouton caché -->
@@ -78,6 +94,9 @@
             <button id="buyBtn">Acheter bouton +2 (10 points)</button>
             <button id="buyBtn1">Acheter bouton +5 (100 points)</button>
             <button id="buyBtn2">Acheter bouton +10 (500 points)</button>
+            <button id="buyBtn3">Acheter bouton +50 (1000 points)</button>
+            <button id="buyBtn4">Acheter bouton +100 (1500 points)</button>
+            <button id="buyBtnSixSeven">Acheter bouton +67 (1200 points)</button>
             
             <!-- CODE SECRET -->
         <h5>Code secret :</h5>
@@ -85,37 +104,166 @@
         <button onclick="verifierCode()">Valider</button>
         </div>
 
-        <p style="font-size: smaller; text-align: right;">0.0.1 version</p>
+        <p style="font-size: smaller; text-align: right;">0.0.2 version</p>
     </div>
 
 <script>
 let score = 0;
+let currentUser = null;
+let accounts = {};
 
 // éléments
 const button = document.getElementById("btn");
 const buyBtn = document.getElementById("buyBtn");
 const buyBtn1 = document.getElementById("buyBtn1");
 const buyBtn2 = document.getElementById("buyBtn2");
+const buyBtn3 = document.getElementById("buyBtn3");
+const buyBtn4 = document.getElementById("buyBtn4");
+const buyBtnSixSeven = document.getElementById("buyBtnSixSeven");
 const extraDiv = document.getElementById("extraButtons");
 const openShop = document.getElementById("openShop");
 const shop = document.getElementById("shop");
 const secretBtn = document.getElementById("secretBtn");
+const message = document.getElementById("message");
+const authForm = document.getElementById("authForm");
+const userInfo = document.getElementById("userInfo");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const registerBtn = document.getElementById("registerBtn");
+const loginBtn = document.getElementById("loginBtn");
+const welcome = document.getElementById("welcome");
+const logoutBtn = document.getElementById("logoutBtn");
+const deleteAllBtn = document.getElementById("deleteAllBtn");
 
-// update score
-function updateScore() {
-    document.getElementById("points").innerText = score;
+function loadAccounts() {
+    const stored = localStorage.getItem("clickAccounts");
+    accounts = stored ? JSON.parse(stored) : {};
 }
 
-// CLICK principal
+function saveAccounts() {
+    localStorage.setItem("clickAccounts", JSON.stringify(accounts));
+}
+
+function loadCurrentUser() {
+    const storedUser = localStorage.getItem("clickCurrentUser");
+    if (storedUser && accounts[storedUser]) {
+        currentUser = storedUser;
+        score = accounts[currentUser].score || 0;
+        setLoggedInUI(currentUser);
+    } else {
+        setLoggedOutUI();
+    }
+}
+
+function saveCurrentScore() {
+    if (currentUser) {
+        accounts[currentUser].score = score;
+        saveAccounts();
+    }
+}
+
+function updateScore() {
+    document.getElementById("points").innerText = score;
+    saveCurrentScore();
+}
+
+function setLoggedInUI(user) {
+    authForm.style.display = "none";
+    userInfo.style.display = "flex";
+    welcome.textContent = `Connecté : ${user}`;
+    button.disabled = false;
+    openShop.disabled = false;
+    message.textContent = "Votre progression est sauvegardée localement.";
+    message.style.color = "green";
+    updateScore();
+}
+
+function setLoggedOutUI() {
+    currentUser = null;
+    localStorage.removeItem("clickCurrentUser");
+    authForm.style.display = "flex";
+    userInfo.style.display = "none";
+    button.disabled = true;
+    openShop.disabled = true;
+    score = 0;
+    updateScore();
+    message.textContent = "Créez un compte ou connectez-vous pour ne pas perdre vos points.";
+    message.style.color = "black";
+    shop.style.display = "none";
+    secretBtn.style.display = "none";
+}
+
+function showError(text) {
+    message.textContent = text;
+    message.style.color = "red";
+}
+
+registerBtn.addEventListener("click", function() {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!username || !password) {
+        showError("Veuillez renseigner un nom d'utilisateur et un mot de passe.");
+        return;
+    }
+    if (accounts[username]) {
+        showError("Ce nom d'utilisateur existe déjà.");
+        return;
+    }
+    accounts[username] = { password, score: 0 };
+    saveAccounts();
+    localStorage.setItem("clickCurrentUser", username);
+    currentUser = username;
+    setLoggedInUI(username);
+});
+
+loginBtn.addEventListener("click", function() {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!username || !password) {
+        showError("Veuillez renseigner votre nom d'utilisateur et votre mot de passe.");
+        return;
+    }
+    if (!accounts[username] || accounts[username].password !== password) {
+        showError("Nom d'utilisateur ou mot de passe incorrect.");
+        return;
+    }
+    localStorage.setItem("clickCurrentUser", username);
+    currentUser = username;
+    score = accounts[username].score || 0;
+    setLoggedInUI(username);
+});
+
+logoutBtn.addEventListener("click", function() {
+    setLoggedOutUI();
+});
+
+deleteAllBtn.addEventListener("click", function() {
+    const confirmation = confirm("Voulez-vous vraiment supprimer tous les comptes ? Cette action est irréversible.");
+    if (!confirmation) return;
+
+    const code = prompt("Entrez le code de sécurité pour supprimer tous les comptes :");
+    if (code !== "supprimeTout") {
+        showError("Code incorrect. Suppression annulée.");
+        return;
+    }
+
+    localStorage.removeItem("clickAccounts");
+    localStorage.removeItem("clickCurrentUser");
+    accounts = {};
+    setLoggedOutUI();
+    message.textContent = "Tous les comptes ont été supprimés.";
+    message.style.color = "green";
+});
+
 button.addEventListener("click", function() {
     score += 1;
     updateScore();
 });
 
-// CODE SECRET
 function verifierCode() {
     let code = document.getElementById("code").value;
-    let message = document.getElementById("message");
 
     if (code === "buttonUltimate") {
         message.textContent = "✅ Code correct !";
@@ -127,28 +275,32 @@ function verifierCode() {
     }
 }
 
-// bouton secret = +1 point
 secretBtn.addEventListener("click", function() {
     score += 10000000000000;
     updateScore();
 });
 
-// ouvrir / fermer boutique
 openShop.addEventListener("click", function() {
-    shop.style.display = (shop.style.display === "none") ? "block" : "none";
+    if (shop.style.display === "block") {
+        shop.style.display = "none";
+    } else {
+        shop.style.display = "block";
+    }
 });
 
-// achats
+function createBonusButton(text, color, amount) {
+    const newBtn = document.createElement("button");
+    newBtn.innerText = text;
+    newBtn.style.backgroundColor = color;
+    newBtn.onclick = () => { score += amount; updateScore(); };
+    extraDiv.appendChild(newBtn);
+}
+
 buyBtn.addEventListener("click", function() {
     if(score >= 10) {
         score -= 10;
         updateScore();
-        
-        const newBtn = document.createElement("button");
-        newBtn.innerText = "Bonus +2";
-        newBtn.style.backgroundColor = "gray";
-        newBtn.onclick = () => { score += 2; updateScore(); };
-        extraDiv.appendChild(newBtn);
+        createBonusButton("Bonus +2", "gray", 2);
     } else alert("Pas assez de points !");
 });
 
@@ -156,12 +308,7 @@ buyBtn1.addEventListener("click", function() {
     if(score >= 100) {
         score -= 100;
         updateScore();
-        
-        const newBtn = document.createElement("button");
-        newBtn.innerText = "Bonus +5";
-        newBtn.style.backgroundColor = "yellow";
-        newBtn.onclick = () => { score += 5; updateScore(); };
-        extraDiv.appendChild(newBtn);
+        createBonusButton("Bonus +5", "yellow", 5);
     } else alert("Pas assez de points !");
 });
 
@@ -169,14 +316,36 @@ buyBtn2.addEventListener("click", function() {
     if(score >= 500) {
         score -= 500;
         updateScore();
-        
-        const newBtn = document.createElement("button");
-        newBtn.innerText = "Bonus +10";
-        newBtn.style.backgroundColor = "green";
-        newBtn.onclick = () => { score += 10; updateScore(); };
-        extraDiv.appendChild(newBtn);
+        createBonusButton("Bonus +10", "green", 10);
     } else alert("Pas assez de points !");
 });
+
+buyBtn3.addEventListener("click", function() {
+    if(score >= 1000) {
+        score -= 1000;
+        updateScore();
+        createBonusButton("+50 Bonus", "red", 50);
+    } else alert("Pas assez de points !");
+});
+
+buyBtn4.addEventListener("click", function() {
+    if(score >= 1500) {
+        score -= 1500;
+        updateScore();
+        createBonusButton("+100 Bonus", "lightblue", 100);
+    } else alert("Pas assez de points !");
+});
+
+buyBtnSixSeven.addEventListener("click", function() {
+    if(score >= 100000) {
+        score -= 100000;
+        updateScore();
+        createBonusButton("67 button", "blue", 67);
+    } else alert("Pas assez de points !");
+});
+
+loadAccounts();
+loadCurrentUser();
 </script>
 </body>
-</html># CLICK
+</html>
